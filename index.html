@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="An interactive, visual introduction to Git." />
+    <title>Git, demystified</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap');
+
+      :root { --ink:#eaf0ff; --muted:#99a8ca; --deep:#080b18; --panel:rgba(18,23,47,.72); --line:rgba(166,185,255,.16); --purple:#9b7cff; --cyan:#60e4e1; --coral:#ff8d77; }
+      * { box-sizing:border-box; }
+      body { margin:0; min-height:100vh; color:var(--ink); background:var(--deep); font-family:Manrope, sans-serif; overflow-x:hidden; }
+      .glow { position:fixed; z-index:-1; width:46vw; aspect-ratio:1; border-radius:50%; filter:blur(80px); opacity:.23; pointer-events:none; }
+      .glow.one { background:var(--purple); top:-20vw; left:-10vw; }.glow.two { background:var(--cyan); right:-20vw; bottom:-25vw; }
+      main { width:min(1120px, calc(100% - 40px)); margin:auto; padding:28px 0 72px; }
+      nav { display:flex; align-items:center; justify-content:space-between; font-size:14px; }
+      .brand { font-weight:800; letter-spacing:-.6px; }.brand i { display:inline-grid; place-items:center; width:20px; height:20px; margin-right:8px; border:1px solid var(--purple); color:var(--purple); border-radius:6px; font-style:normal; }
+      .badge { color:var(--cyan); font:12px 'DM Mono'; border:1px solid rgba(96,228,225,.3); border-radius:999px; padding:7px 11px; }
+      .hero { padding:100px 0 64px; max-width:820px; }
+      .eyebrow { color:var(--cyan); font:500 12px 'DM Mono'; letter-spacing:.11em; text-transform:uppercase; }
+      h1 { font-size:clamp(46px, 8vw, 94px); line-height:.98; letter-spacing:-.075em; margin:17px 0 22px; }.gradient { background:linear-gradient(100deg,var(--purple),#d9ceff 43%,var(--cyan)); -webkit-background-clip:text; color:transparent; }
+      .intro { color:var(--muted); max-width:590px; font-size:18px; line-height:1.65; margin:0; }.intro strong { color:var(--ink); }
+      .section-title { display:flex; align-items:center; gap:12px; margin:58px 0 20px; font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:.1em; }.section-title b { color:var(--purple); font:500 12px 'DM Mono'; }
+      .flow { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }.step { position:relative; min-height:206px; padding:23px; background:var(--panel); border:1px solid var(--line); border-radius:18px; cursor:pointer; transition:.25s ease; overflow:hidden; }.step:hover,.step.active { transform:translateY(-5px); border-color:rgba(155,124,255,.7); box-shadow:0 18px 42px rgba(0,0,0,.2); }.step.active:after { content:''; position:absolute; inset:auto -20px -30px auto; width:90px; height:90px; background:var(--purple); filter:blur(38px); opacity:.45; }.step .n { color:var(--cyan); font:12px 'DM Mono'; }.step h3 { margin:29px 0 9px; font-size:20px; letter-spacing:-.05em; }.step p { margin:0; color:var(--muted); font-size:14px; line-height:1.55; }.arrow { display:none; }
+      .explain { min-height:67px; margin-top:12px; padding:18px 22px; color:#c8d1ec; font-size:14px; border-left:2px solid var(--purple); background:rgba(155,124,255,.08); border-radius:0 12px 12px 0; }
+      .lab { display:grid; grid-template-columns:1.04fr .96fr; gap:18px; }.terminal,.branch-card { background:var(--panel); border:1px solid var(--line); border-radius:18px; overflow:hidden; }.terminal-top { padding:13px 17px; border-bottom:1px solid var(--line); color:var(--muted); font:12px 'DM Mono'; }.lights span { display:inline-block; width:8px; height:8px; margin-right:5px; border-radius:50%; background:var(--coral); }.lights span:nth-child(2){background:#ffcf6c}.lights span:nth-child(3){background:var(--cyan)}
+      .commands { display:flex; flex-wrap:wrap; gap:8px; padding:18px 18px 0; }.commands button { color:#cbd5f3; background:#141b36; border:1px solid var(--line); border-radius:8px; padding:8px 10px; font:12px 'DM Mono'; cursor:pointer; transition:.2s; }.commands button:hover,.commands button.active { color:var(--deep); background:var(--cyan); border-color:var(--cyan); }.output { min-height:150px; padding:23px 22px; font:14px/1.75 'DM Mono'; color:#d6def6; }.output .prompt { color:var(--cyan); }.output .command { color:#fff; }.output .result { color:var(--muted); }
+      .branch-card { padding:23px; }.branch-card h2 { margin:0; font-size:20px; letter-spacing:-.05em; }.branch-card p { color:var(--muted); font-size:14px; line-height:1.5; }.switcher { display:flex; gap:7px; margin:17px 0 25px; }.switcher button { flex:1; border:1px solid var(--line); background:transparent; color:var(--muted); padding:9px; border-radius:8px; font:12px 'DM Mono'; cursor:pointer; }.switcher button.active { color:var(--deep); background:var(--purple); border-color:var(--purple); }.graph { position:relative; height:125px; }.rail { position:absolute; top:51px; left:22px; right:22px; height:2px; background:#3b4670; }.fork { position:absolute; top:27px; left:48%; width:2px; height:26px; background:var(--purple); transform:rotate(-42deg); transform-origin:bottom; }.nodes { display:flex; position:relative; justify-content:space-between; padding:43px 12px 0; }.node { position:relative; width:17px; height:17px; background:#566386; border:3px solid #1b2446; border-radius:50%; transition:.25s; }.node::after { content:attr(data-label); position:absolute; top:23px; left:50%; transform:translateX(-50%); font:11px 'DM Mono'; color:var(--muted); white-space:nowrap; }.node.live { background:var(--cyan); box-shadow:0 0 0 6px rgba(96,228,225,.15); }.node.feature { position:absolute; top:0; left:46%; background:var(--purple); }.node.feature::after { top:-24px; }.node.hidden { opacity:.15; }
+      .footer { margin-top:55px; padding:25px 0; border-top:1px solid var(--line); color:var(--muted); font-size:13px; }.footer strong { color:var(--ink); }
+      @media(max-width:720px) { main{width:min(100% - 28px, 560px)}.hero{padding:72px 0 35px}.flow,.lab{grid-template-columns:1fr 1fr}.step{min-height:160px;padding:18px}.step h3{margin:18px 0 7px}.lab{grid-template-columns:1fr}.branch-card{min-height:260px} }
+      @media(max-width:440px) { .flow{grid-template-columns:1fr}.hero h1{font-size:55px}.badge{display:none} }
+    </style>
+  </head>
+  <body>
+    <div class="glow one"></div><div class="glow two"></div>
+    <main>
+      <nav><div class="brand"><i>⌘</i>git, simply</div><div class="badge">INTERACTIVE FIELD GUIDE</div></nav>
+      <section class="hero"><div class="eyebrow">Version control, without the fog</div><h1>Build freely.<br><span class="gradient">Keep every version.</span></h1><p class="intro">Git is a <strong>time machine for your project</strong>. It remembers your work, lets you experiment safely, and helps your team build together.</p></section>
+      <div class="section-title"><b>01</b> The everyday loop</div>
+      <section class="flow" id="flow">
+        <article class="step active" data-info="You change files on your computer. This is your private workshop: nothing is saved to Git yet."><span class="n">01 / EDIT</span><h3>Make a change</h3><p>Write, delete, explore. Break things safely.</p></article>
+        <article class="step" data-info="Staging is a deliberate shortlist. It tells Git exactly which changes belong in your next snapshot."><span class="n">02 / STAGE</span><h3>Choose it</h3><p>Pick the changes that are ready to save.</p></article>
+        <article class="step" data-info="A commit is a named snapshot: a durable point you can always return to. Good messages explain why, not just what."><span class="n">03 / COMMIT</span><h3>Save a snapshot</h3><p>Give this piece of work a permanent home.</p></article>
+        <article class="step" data-info="Push sends your commits to a shared remote, such as GitHub. Now your backup—and your teammates—have them too."><span class="n">04 / PUSH</span><h3>Share it</h3><p>Send your finished work to the team.</p></article>
+      </section>
+      <div class="explain" id="explain">You change files on your computer. This is your private workshop: nothing is saved to Git yet.</div>
+      <div class="section-title"><b>02</b> Try the moves</div>
+      <section class="lab">
+        <div class="terminal"><div class="terminal-top"><span class="lights"><span></span><span></span><span></span></span> &nbsp; your-project — terminal</div><div class="commands" id="commands"><button class="active" data-cmd="git status" data-result="On branch main\nChanges not staged for commit:\n  modified:  index.html">git status</button><button data-cmd="git add index.html" data-result="Staged 1 file.\nYour next commit will include index.html.">git add</button><button data-cmd="git commit -m &quot;Polish homepage&quot;" data-result="[main a18f0c2] Polish homepage\n 1 file changed, 42 insertions(+)">git commit</button><button data-cmd="git push origin main" data-result="Everything up-to-date on GitHub.\nYour work is shared.">git push</button></div><div class="output" id="output"><span class="prompt">you@project:~$</span> <span class="command">git status</span><br><span class="result">On branch main<br>Changes not staged for commit:<br>&nbsp;&nbsp;modified: index.html</span></div></div>
+        <div class="branch-card"><h2>Branches = safe ideas</h2><p>A branch is a parallel timeline. Use it to try a feature without disturbing the stable version.</p><div class="switcher"><button class="active" data-branch="main">main</button><button data-branch="feature">feature/new-idea</button></div><div class="graph"><div class="rail"></div><div class="fork"></div><div class="nodes"><i class="node live" data-label="start"></i><i class="node live" data-label="v1"></i><i class="node live" data-label="now"></i><i class="node" data-label="next"></i><i class="node feature hidden" data-label="idea"></i></div></div><p id="branch-copy">You are on <strong>main</strong>: the stable timeline everyone relies on.</p></div>
+      </section>
+      <p class="footer"><strong>The whole idea:</strong> make small snapshots, name them clearly, and never be afraid to experiment.</p>
+    </main>
+    <script>
+      const steps=document.querySelectorAll('.step'), explain=document.querySelector('#explain');
+      steps.forEach(step=>step.addEventListener('click',()=>{steps.forEach(s=>s.classList.remove('active'));step.classList.add('active');explain.textContent=step.dataset.info;}));
+      const output=document.querySelector('#output'); document.querySelectorAll('#commands button').forEach(button=>button.addEventListener('click',()=>{document.querySelectorAll('#commands button').forEach(b=>b.classList.remove('active'));button.classList.add('active');output.innerHTML=`<span class="prompt">you@project:~$</span> <span class="command">${button.dataset.cmd}</span><br><span class="result">${button.dataset.result.replaceAll('\n','<br>')}</span>`;}));
+      const branchButtons=document.querySelectorAll('[data-branch]'), feature=document.querySelector('.node.feature'), copy=document.querySelector('#branch-copy'); branchButtons.forEach(button=>button.addEventListener('click',()=>{branchButtons.forEach(b=>b.classList.remove('active'));button.classList.add('active');const onFeature=button.dataset.branch==='feature';feature.classList.toggle('hidden',!onFeature);copy.innerHTML=onFeature?'You are exploring <strong>feature/new-idea</strong>. Main stays untouched.':'You are on <strong>main</strong>: the stable timeline everyone relies on.';}));
+    </script>
+  </body>
+</html>
